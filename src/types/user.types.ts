@@ -21,3 +21,7 @@ export interface CardProps {
     value: number;
     color: string;
 }
+
+export interface DoughnutChartProps {
+    dataValues: CardProps[];
+}

@@ -9,7 +9,7 @@ export default function RootLayout({
     return (
         <main className="min-h-screen w-screen overflow-x-hidden lg:flex">
             <div className="flex">
-                <div className="lg:w-[300px] hidden lg:flex">
+                <div className="lg:w-[300px] hidden lg:flex h-full">
                     <Sidebar />
                 </div>
                 <div className="lg:hidden w-full bg-gray-200 shadow-lg backdrop-blur-md">

@@ -2,16 +2,21 @@
 
 import {Doughnut} from "react-chartjs-2";
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from "chart.js";
+import {DoughnutChartProps} from "@/types/user.types";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function DoughnutChart() {
+export default function DoughnutChart({dataValues}: DoughnutChartProps) {
+    const values = dataValues.map((item) => {
+        return item.value;
+    });
+
     const data = {
         labels: ["Income", "Expense", "Balance"],
         datasets: [
             {
                 label: "Amount",
-                data: [10000, 5000, 5000],
+                data: [...values],
                 backgroundColor: [
                     "rgba(34, 197, 94, 0.6)", // green
                     "rgba(239, 68, 68, 0.6)", // red
@@ -35,7 +40,7 @@ export default function DoughnutChart() {
     };
 
     return (
-        <div className="-ml-10 -mr-10 h-full">
+        <div className="-mx-14 md:-mx-10 h-full">
             {" "}
             {/* 👈 container controls chart size */}
             <Doughnut data={data} options={options} />

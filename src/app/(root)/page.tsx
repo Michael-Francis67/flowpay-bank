@@ -1,5 +1,6 @@
 import AccountDetailsCard from "@/components/AccountDetailsCard";
 import HeaderBox from "@/components/HeaderBox";
+import RecentTransactions from "@/components/RecentTransactions";
 import React from "react";
 
 const Home = () => {
@@ -13,6 +14,10 @@ const Home = () => {
             />
 
             <AccountDetailsCard income={1000} expense={200} balance={500} />
+
+            <div className="mt-4 overflow-auto w-full">
+                <RecentTransactions title="Recent Transactions" />
+            </div>
         </main>
     );
 };

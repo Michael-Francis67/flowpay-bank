@@ -17,7 +17,7 @@ const Sidebar = () => {
     };
 
     return (
-        <section className="h-screen w-full hidden lg:flex lg:flex-col bg-gray-200 space-y-4">
+        <section className="h-full sticky w-full hidden lg:flex lg:flex-col bg-gray-200 space-y-4">
             <div className="w-full h-[10%] flex justify-center items-center">
                 <div className="flex justify-center items-center gap-1">
                     <Image
