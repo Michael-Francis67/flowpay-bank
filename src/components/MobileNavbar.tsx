@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
 import {Menu} from "lucide-react";
 import Footer from "./Footer";
@@ -8,15 +8,27 @@ import {navLinks} from "@/constants";
 import Image from "next/image";
 import {usePathname} from "next/navigation";
 import Link from "next/link";
+import {checkAuth} from "@/actions/user.actions";
 
 const MobileNavbar = () => {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
     const [open, setOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const user = await checkAuth();
+            console.log(user.user);
+            setCurrentUser(user.user);
+        };
+
+        fetchUser();
+    }, []);
 
     const user = {
-        name: "Michael Jackson",
-        email: "michaeljackson@gmail.com",
+        name: currentUser?.firstName + " " + currentUser?.lastName,
+        email: currentUser?.email,
     };
 
     return (

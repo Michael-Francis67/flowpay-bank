@@ -7,7 +7,9 @@ import {Form} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {FormFieldRenderer} from "@/components/CustomFormField";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import {kyc} from "@/actions/user.actions";
 
 const kycSchema = z.object({
     selfie: z.instanceof(File).optional(),
@@ -39,9 +41,15 @@ const kycFields = [
 ];
 
 function KycForm({params: {userId}}: {params: {userId: string}}) {
-    console.log("Params", userId);
-
     const [loading, setLoading] = useState(false);
+    const [id, setId] = useState("");
+    const router = useRouter();
+
+    useEffect(() => {
+        if (userId) {
+            setId(userId);
+        }
+    }, [userId]);
 
     const form = useForm<KycFormValues>({
         resolver: zodResolver(kycSchema),
@@ -49,15 +57,25 @@ function KycForm({params: {userId}}: {params: {userId: string}}) {
     });
 
     const onSubmit = async (data: KycFormValues) => {
-        setLoading(true);
-        console.log("KYC Data:", data);
-        await new Promise((res) => setTimeout(res, 2000));
-        setLoading(false);
+        try {
+            setLoading(true);
+            console.log("KYC Data:", data);
+
+            const response = await kyc(data, id);
+
+            router.push(`/createpin/${response?.user?.id}`);
+
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     };
 
     return (
         <div className="flex items-center justify-center h-full w-full">
             <div className="w-full p-6">
+                <h1 className="text-2xl font-bold mb-8 uppercase text-center">professional details</h1>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
                         {kycFields.map((field) => (

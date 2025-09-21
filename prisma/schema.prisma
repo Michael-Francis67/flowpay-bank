@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IDType {
+  NIN
+  BVN
+  PASSPORT
+  DRIVERS_LICENSE
+}
+
+enum Status {
+  SUCCESSFUL
+  PENDING
+  FAILED
+}
+
+enum Type {
+  INCOME
+  EXPENSE
+  BALANCE
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  firstName          String
+  lastName           String
+  email              String    @unique
+  phoneNumber        String    @unique
+  password           String
+  profilePic         String?
+  publicId           String?
+  accountName        String
+  accountNumber      String
+  bankName           String
+  bankCode           String
+  accountReference   String
+  accountPin         String?
+  dob                DateTime?
+  address            String?
+  governmentIdNumber String?
+  idType             IDType    @default(NIN)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // relations
+  wallet       Wallet?
+  transactions Transactions[]
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  balance   Decimal  @default(10000) @db.Decimal(18, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactionId String
+  transactions  Transactions[]
+
+  @@unique([userId])
+}
+
+model Transactions {
+  id          String   @id @default(cuid())
+  amount      Int
+  currency    String   @default("NGN")
+  status      Status   @default(PENDING)
+  type        Type     @default(EXPENSE)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // relations
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, walletId])
+}

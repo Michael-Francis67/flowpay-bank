@@ -12,7 +12,7 @@ const CopyAccountNo = ({accountNumber}: {accountNumber: string}) => {
     };
 
     return (
-        <div>
+        <div className="max-lg:hidden">
             {clicked ? (
                 <div>
                     <Check size={20} />

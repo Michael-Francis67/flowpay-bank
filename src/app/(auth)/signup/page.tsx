@@ -8,6 +8,8 @@ import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {useState} from "react";
+import {signUp} from "@/actions/user.actions";
+import {useRouter} from "next/navigation";
 
 const signupSchema = z.object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -35,6 +37,7 @@ const signupFields = [
 
 function SignupForm() {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
@@ -42,15 +45,28 @@ function SignupForm() {
     });
 
     const onSubmit = async (data: SignupFormValues) => {
-        setLoading(true);
-        console.log("Signup Data:", data);
-        await new Promise((res) => setTimeout(res, 2000));
-        setLoading(false);
+        try {
+            setLoading(true);
+            console.log("Signup Data:", data);
+
+            const user = await signUp(data);
+
+            console.log(user);
+            setLoading(false);
+
+            if (user) {
+                router.push(`/signup/${user?.user?.id}`);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     };
 
     return (
         <div className="flex items-center justify-center h-full">
             <div className="w-full p-6">
+                <h1 className="text-2xl font-bold mb-8 uppercase text-center">Sign Up</h1>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid md:grid-cols-2 gap-4">

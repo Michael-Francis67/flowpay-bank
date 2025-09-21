@@ -1,11 +1,13 @@
 "use client";
 
+import {createPin} from "@/actions/user.actions";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {Button} from "@/components/ui/button";
 import {Form} from "@/components/ui/form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Loader2} from "lucide-react";
-import React, {useState} from "react";
+import {useRouter} from "next/navigation";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import z from "zod";
 
@@ -26,23 +28,42 @@ const CreatePinFields = [
     {name: "confirmPin", label: "Confirm Pin", type: "number", placeholder: "Re-enter your pin", min: 0},
 ];
 
-const CreatePin = () => {
+const CreatePin = ({params: {userId}}: {params: {userId: string}}) => {
+    const [id, setId] = useState(userId);
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
         defaultValues: {pin: "", confirmPin: ""},
     });
 
+    useEffect(() => {
+        if (userId) {
+            setId(userId);
+        }
+    }, [userId]);
+
     const onSubmit = async (data: SignupFormValues) => {
-        setLoading(true);
-        console.log("Create pin Data:", data);
-        await new Promise((res) => setTimeout(res, 2000));
-        setLoading(false);
+        try {
+            setLoading(true);
+            console.log("Create pin Data:", data);
+
+            const response = await createPin(data, id);
+
+            console.log(response);
+
+            setLoading(false);
+            router.push("/");
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     };
 
     return (
         <div className="flex items-center justify-center h-full">
             <div className="w-full p-6">
+                <h1 className="text-2xl font-bold mb-8 uppercase text-center">Create Pin</h1>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         {CreatePinFields.map((fields) => (
