@@ -43,7 +43,7 @@ model User {
   profilePic         String?
   publicId           String?
   accountName        String
-  accountNumber      String
+  accountNumber      String    @unique
   bankName           String
   bankCode           String
   accountReference   String
@@ -56,23 +56,33 @@ model User {
   updatedAt          DateTime  @updatedAt
 
   // relations
-  wallet       Wallet?
-  transactions Transactions[]
+  wallet        Wallet?
+  transactions  Transactions[]
+  notifications Notifications[]
 }
 
 model Wallet {
-  id        String   @id @default(cuid())
-  balance   Decimal  @default(10000) @db.Decimal(18, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String     @id @default(cuid())
+  totalBalance Decimal    @default(1000000) @db.Decimal(18, 2)
+  balance      Decimal    @default(1000000) @db.Decimal(18, 2)
+  expenses     Expenses[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   // relations
-  userId        String
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactionId String
-  transactions  Transactions[]
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Expenses {
+  id        String   @id @default(cuid())
+  walletId  String
+  wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  amount    Decimal  @default(1000000) @db.Decimal(18, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Transactions {
@@ -82,14 +92,25 @@ model Transactions {
   status      Status   @default(PENDING)
   type        Type     @default(EXPENSE)
   description String?
+  reference   String
+  senderId    String?
+  receiverId  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // relations
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  walletId String
-  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [receiverId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, walletId])
+  @@unique([reference])
+}
+
+model Notifications {
+  id        String   @id @default(cuid())
+  title     String?
+  message   String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

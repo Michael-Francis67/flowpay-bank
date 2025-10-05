@@ -1,35 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import React, {useEffect, useRef} from "react";
+import {usePathname, useRouter} from "next/navigation";
 import {navLinks} from "@/constants";
 import Footer from "./Footer";
 import Image from "next/image";
-import {checkAuth} from "@/actions/user.actions";
 
 const Sidebar = () => {
     const pathname = usePathname();
+    const router = useRouter();
     const isActive = (path: string) => pathname === path;
-    const [currentUser, setCurrentUser] = useState<any>(null);
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            const user = await checkAuth();
-            console.log(user.user);
-            setCurrentUser(user.user);
-        };
-
-        fetchUser();
-    }, []);
-
-    const user = {
-        name: currentUser?.firstName + " " + currentUser?.lastName,
-        email: currentUser?.email,
-    };
 
     return (
-        <section className="h-full sticky w-full hidden lg:flex lg:flex-col bg-gray-200 space-y-4">
+        <section className="h-full sticky w-full hidden lg:flex lg:flex-col bg-gray-200 space-y-4 backdrop-blur-md backdrop-brightness-75 p-4 rounded-lg">
             <div className="w-full h-[10%] flex justify-center items-center">
                 <div className="flex justify-center items-center gap-1">
                     <Image
@@ -49,9 +33,10 @@ const Sidebar = () => {
                             key={link.name}
                             className={`flex items-center gap-6 ${
                                 isActive(link.route) ? "bg-blue-500" : "hover:bg-gray-500 "
-                            } w-full py-2 rounded-lg transition-all duration-300 px-4 hover:text-white ${
+                            } w-full py-2 rounded-lg transition-all duration-300 px-4 hover:text-white cursor-pointer ${
                                 isActive(link.route) && "bg-blue-500 text-white"
                             }`}
+                            onClick={() => router.push(link.route)}
                         >
                             <link.icon size={20} />
                             <Link href={link.route}>{link.name}</Link>
@@ -59,7 +44,7 @@ const Sidebar = () => {
                     ))}
                 </ul>
             </nav>
-            <Footer user={user} />
+            <Footer />
         </section>
     );
 };

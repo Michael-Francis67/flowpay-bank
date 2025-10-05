@@ -6,30 +6,19 @@ import {Menu} from "lucide-react";
 import Footer from "./Footer";
 import {navLinks} from "@/constants";
 import Image from "next/image";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import {checkAuth} from "@/actions/user.actions";
+import {useUserStore} from "@/stores/useUserStore";
 
 const MobileNavbar = () => {
     const pathname = usePathname();
+    const router = useRouter();
+
     const isActive = (path: string) => pathname === path;
     const [open, setOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState<any>(null);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const user = await checkAuth();
-            console.log(user.user);
-            setCurrentUser(user.user);
-        };
-
-        fetchUser();
-    }, []);
-
-    const user = {
-        name: currentUser?.firstName + " " + currentUser?.lastName,
-        email: currentUser?.email,
-    };
+    // @ts-ignore
+    const {user} = useUserStore();
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -60,6 +49,7 @@ const MobileNavbar = () => {
                                     } w-full py-2 rounded-lg transition-all duration-300 px-4 hover:text-white ${
                                         isActive(link.route) && "bg-blue-500 text-white"
                                     }`}
+                                    onClick={() => router.push(link.route)}
                                 >
                                     <link.icon size={20} />
                                     <Link href={link.route}>{link.name}</Link>
@@ -67,7 +57,7 @@ const MobileNavbar = () => {
                             ))}
                         </ul>
                     </nav>
-                    <Footer user={user} />
+                    <Footer />
                 </section>
             </SheetContent>
         </Sheet>

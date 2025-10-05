@@ -1,9 +1,9 @@
 "use client";
 
-import {createPin} from "@/actions/user.actions";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {Button} from "@/components/ui/button";
 import {Form} from "@/components/ui/form";
+import {useUserStore} from "@/stores/useUserStore";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Loader2} from "lucide-react";
 import {useRouter} from "next/navigation";
@@ -36,6 +36,8 @@ const CreatePin = ({params: {userId}}: {params: {userId: string}}) => {
         resolver: zodResolver(signupSchema),
         defaultValues: {pin: "", confirmPin: ""},
     });
+    // @ts-ignore
+    const {createPin} = useUserStore();
 
     useEffect(() => {
         if (userId) {
@@ -72,7 +74,7 @@ const CreatePin = ({params: {userId}}: {params: {userId: string}}) => {
                         ))}
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {loading ? "Loading..." : "Sign Up"}
+                            {loading ? "Loading..." : "Create Pin"}
                         </Button>
                     </form>
                 </Form>

@@ -1,3 +1,4 @@
+import AccountDetailsCard from "@/components/AccountDetailsCard";
 import HeaderBox from "@/components/HeaderBox";
 import RecentTransactions from "@/components/RecentTransactions";
 import React from "react";
@@ -11,6 +12,8 @@ const Transactions = () => {
                     title="Transactions History"
                     subtext="View all your past and recent financial activities in one place."
                 />
+
+                <AccountDetailsCard />
 
                 <div>
                     <RecentTransactions title="Transactions" />

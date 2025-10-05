@@ -1,11 +1,29 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import {useUserStore} from "@/stores/useUserStore";
+import {useEffect, useState} from "react";
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    // @ts-ignore
+    const {checkAuth} = useUserStore();
+    const [_, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        const getUser = async () => {
+            await checkAuth();
+            setLoading(false);
+        };
+
+        getUser();
+    }, [checkAuth]);
+
     return (
         <main className="min-h-screen w-screen overflow-x-hidden lg:flex">
             <div className="flex">

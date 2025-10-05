@@ -16,7 +16,7 @@ const Deposit = () => {
                 </div>
 
                 <div>
-                    <AccountDetailsCard income={1000} expense={200} balance={500} />
+                    <AccountDetailsCard />
                 </div>
 
                 <div className="flex flex-col gap-2 mt-6">

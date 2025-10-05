@@ -9,7 +9,7 @@ import {Loader2} from "lucide-react";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
-import {kyc} from "@/actions/user.actions";
+import {useUserStore} from "@/stores/useUserStore";
 
 const kycSchema = z.object({
     selfie: z.instanceof(File).optional(),
@@ -30,7 +30,7 @@ const kycSchema = z.object({
     }),
 });
 
-type KycFormValues = z.infer<typeof kycSchema>;
+export type KycFormValues = z.infer<typeof kycSchema>;
 
 const kycFields = [
     {name: "selfie", label: "Selfie Upload", type: "file"},
@@ -44,6 +44,8 @@ function KycForm({params: {userId}}: {params: {userId: string}}) {
     const [loading, setLoading] = useState(false);
     const [id, setId] = useState("");
     const router = useRouter();
+    // @ts-ignore
+    const {kyc} = useUserStore();
 
     useEffect(() => {
         if (userId) {
@@ -60,6 +62,11 @@ function KycForm({params: {userId}}: {params: {userId: string}}) {
         try {
             setLoading(true);
             console.log("KYC Data:", data);
+            const {address, idNumber, idType, selfie, dob} = data;
+
+            if (!address || !idNumber || !idType || !selfie || !dob) {
+                return alert("All fields are required");
+            }
 
             const response = await kyc(data, id);
 

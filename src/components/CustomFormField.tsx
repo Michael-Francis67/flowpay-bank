@@ -15,7 +15,7 @@ import Image from "next/image";
 type Field = {
     name: string;
     label: string;
-    type: "text" | "email" | "password" | "phone" | "select" | "date" | "file" | "number";
+    type: "text" | "email" | "password" | "phone" | "select" | "date" | "file" | "number" | "textarea";
     placeholder?: string;
     options?: string[];
     min?: number;
@@ -136,6 +136,27 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({field, cont
                                     placeholderText={field.placeholder}
                                     dateFormat="dd/MM/yyyy"
                                     className="w-full border rounded-md p-2"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            );
+
+        case "textarea":
+            return (
+                <FormField
+                    control={control}
+                    name={field.name as any}
+                    render={({field: rhfField}) => (
+                        <FormItem>
+                            <FormLabel>{field.label}</FormLabel>
+                            <FormControl>
+                                <textarea
+                                    className="w-full border rounded-md p-2"
+                                    placeholder={field.placeholder}
+                                    {...rhfField}
                                 />
                             </FormControl>
                             <FormMessage />

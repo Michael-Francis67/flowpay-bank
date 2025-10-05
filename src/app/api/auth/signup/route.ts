@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import {getMonnifyAccessToken} from "@/helpers/getMonnifyAccessToken";
 import {createVirtualAccount} from "@/helpers/createVirtualAccount";
 import {formatPhoneNumber} from "@/lib/formatPhoneNumber";
+import {generateToken} from "@/lib/generateToken";
 
 export async function POST(req: NextRequest) {
     try {
@@ -32,8 +33,6 @@ export async function POST(req: NextRequest) {
 
         const resultBody = await createVirtualAccount({firstName, lastName, email}, accessToken);
 
-        console.log("Result Body", resultBody);
-
         if (!resultBody) {
             return NextResponse.json({error: "Failed to create virtual account"}, {status: 500});
         }
@@ -57,11 +56,18 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        cookies().set("token", newUser.id, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60,
+        await prisma.wallet.create({
+            data: {
+                userId: newUser.id,
+            },
+        });
+
+        await prisma.notifications.create({
+            data: {
+                userId: newUser.id,
+                title: "Welcome to FlowPay",
+                message: "Your account has been created successfully and you can make your first transfer now.",
+            },
         });
 
         return NextResponse.json(

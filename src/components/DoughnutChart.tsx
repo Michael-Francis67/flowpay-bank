@@ -2,11 +2,32 @@
 
 import {Doughnut} from "react-chartjs-2";
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from "chart.js";
-import {DoughnutChartProps} from "@/types/user.types";
+import {useUserStore} from "@/stores/useUserStore";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function DoughnutChart({dataValues}: DoughnutChartProps) {
+export default function DoughnutChart() {
+    // @ts-ignore
+    const {user} = useUserStore();
+
+    const dataValues = [
+        {
+            label: "Income",
+            value: user?.wallet?.totalBalance || 0,
+            color: "#4ade80",
+        },
+        {
+            label: "Expense",
+            value: user?.wallet?.totalBalance - user?.wallet?.balance || 0,
+            color: "#ef4444",
+        },
+        {
+            label: "Balance",
+            value: user?.wallet?.balance || 0,
+            color: "#3b82f6",
+        },
+    ];
+
     const values = dataValues.map((item) => {
         return item.value;
     });

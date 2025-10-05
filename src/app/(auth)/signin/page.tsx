@@ -8,6 +8,9 @@ import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {useState} from "react";
+import {useUserStore} from "@/stores/useUserStore";
+import {useRouter} from "next/navigation";
+import Link from "next/link";
 
 const SignInSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -23,6 +26,9 @@ const SignInFields = [
 
 function SignInForm() {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    // @ts-ignore
+    const {signIn, error} = useUserStore();
 
     const form = useForm<SignInFormValues>({
         resolver: zodResolver(SignInSchema),
@@ -31,9 +37,18 @@ function SignInForm() {
 
     const onSubmit = async (data: SignInFormValues) => {
         setLoading(true);
-        console.log("SignIn Data:", data);
-        await new Promise((res) => setTimeout(res, 2000));
-        setLoading(false);
+        try {
+            const res = await signIn(data);
+
+            if (res?.user) {
+                router.push("/");
+            }
+        } catch (error: any) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+            form.reset();
+        }
     };
 
     return (
@@ -47,11 +62,37 @@ function SignInForm() {
                             <FormFieldRenderer key={field.name} field={field} control={form.control} />
                         ))}
 
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input id="remember" name="remember" type="checkbox" className="h-4 w-4" />
+                                <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
+                                    Remember me
+                                </label>
+                            </div>
+                            <div className="text-sm">
+                                <Link
+                                    href="/forgot-password"
+                                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                                >
+                                    Forgot your password?
+                                </Link>
+                            </div>
+                        </div>
+
+                        <p className="text-sm text-red-600 text-center mt-4 mb-2">{error}</p>
+
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {loading ? "Loading..." : "Sign In"}
                         </Button>
                     </form>
+
+                    <p className="text-sm text-center mt-4">
+                        Don&apos;t have an account?{" "}
+                        <Link href="/signup" className="text-blue-500">
+                            Sign Up
+                        </Link>
+                    </p>
                 </Form>
             </div>
         </div>

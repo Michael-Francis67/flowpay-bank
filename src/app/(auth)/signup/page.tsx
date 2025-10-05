@@ -8,8 +8,11 @@ import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {FormFieldRenderer} from "@/components/CustomFormField";
 import {useState} from "react";
-import {signUp} from "@/actions/user.actions";
 import {useRouter} from "next/navigation";
+import {useUserStore} from "@/stores/useUserStore";
+import Link from "next/link";
+import {revalidatePath} from "next/cache";
+import {revalidateHome} from "@/actions/revalidateHome";
 
 const signupSchema = z.object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -43,6 +46,8 @@ function SignupForm() {
         resolver: zodResolver(signupSchema),
         defaultValues: {firstName: "", lastName: "", email: "", phone: "", password: ""},
     });
+    // @ts-ignore
+    const {signUp, error} = useUserStore();
 
     const onSubmit = async (data: SignupFormValues) => {
         try {
@@ -55,11 +60,15 @@ function SignupForm() {
             setLoading(false);
 
             if (user) {
+                await revalidateHome("/");
                 router.push(`/signup/${user?.user?.id}`);
             }
         } catch (error) {
             console.log(error);
             setLoading(false);
+        } finally {
+            setLoading(false);
+            form.reset();
         }
     };
 
@@ -85,11 +94,20 @@ function SignupForm() {
                             // @ts-ignore
                             <FormFieldRenderer field={signupFields[4]} control={form.control} />
                         }
+
+                        <p className="text-sm text-red-600 text-center mt-4 mb-2">{error}</p>
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {loading ? "Loading..." : "Sign Up"}
                         </Button>
                     </form>
+
+                    <p className="text-sm text-center mt-4">
+                        Already have an account?{" "}
+                        <Link href="/signin" className="text-blue-500">
+                            Sign In
+                        </Link>
+                    </p>
                 </Form>
             </div>
         </div>

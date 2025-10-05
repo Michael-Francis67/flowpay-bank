@@ -13,11 +13,7 @@ const CountUpCard = ({label, value, color}: CardProps) => {
                 <h1>
                     <StatusLabel label={label} />
                 </h1>
-                <h1
-                    className={`text-xl font-bold ${
-                        label === "balance" ? "text-blue-600" : label === "expense" ? "text-red-600" : "text-green-600"
-                    }`}
-                >
+                <h1 className={`text-xl font-bold ${color}`}>
                     <CountUp end={value} duration={2.75} prefix={formatAmount(value)} decimals={2} />
                 </h1>
             </div>
