@@ -18,7 +18,10 @@ export default function DoughnutChart() {
         },
         {
             label: "Expense",
-            value: user?.wallet?.totalBalance - user?.wallet?.balance || 0,
+            value:
+                user?.wallet?.totalBalance > user?.wallet?.balance
+                    ? user?.wallet?.totalBalance - user?.wallet?.balance
+                    : user?.wallet?.balance - user?.wallet?.totalBalance || 0,
             color: "#ef4444",
         },
         {
