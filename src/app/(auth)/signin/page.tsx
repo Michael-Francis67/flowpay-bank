@@ -40,9 +40,7 @@ function SignInForm() {
         try {
             const res = await signIn(data);
 
-            if (res?.user) {
-                router.push("/");
-            }
+            router.push("/");
         } catch (error: any) {
             console.log(error);
         } finally {
